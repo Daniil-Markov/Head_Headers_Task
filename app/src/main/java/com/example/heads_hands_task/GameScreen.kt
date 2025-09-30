@@ -72,13 +72,12 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-
             state.player?.let { player ->
                 StatCard(
                     title = "Игрок",
                     lines = listOf(
                         "Здоровье: ${player.health}/${player.maxHealth}",
-                        "Исцелений : ${player.healsLeft}"
+                        "Исцелений: ${player.healsLeft}"
                     )
                 )
             }
@@ -107,7 +106,7 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    state.player?.let { PlayerImage(it) }
+                    state.player?.let { PlayerImage(it) } ?: Spacer(Modifier.size(100.dp))
                     Text(
                         text = "vs",
                         fontFamily = FontFamily.Monospace,
@@ -115,7 +114,7 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                         color = Color.White,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
-                    state.enemy?.let { MonsterImage(it) }
+                    state.enemy?.let { MonsterImage(it) } ?: Spacer(Modifier.size(100.dp))
                 }
             }
 
@@ -141,7 +140,6 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                 )
             }
 
-
             Spacer(Modifier.height(16.dp))
 
             Text(
@@ -155,44 +153,62 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
     }
 }
 
-
 @Composable
 fun MonsterImage(monster: Monster) {
-    val imageRes = when (monster.type) {
-        EnemyType.GHOST -> R.drawable.ghost
-        EnemyType.ORC -> R.drawable.orc
-        EnemyType.TROLL -> R.drawable.troll
-    }
-
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = monster.type.name,
+    Box(
         modifier = Modifier
             .size(100.dp)
             .padding(8.dp)
-    )
+            .background(
+                color = when (monster.type) {
+                    EnemyType.GHOST -> Color.White
+                    EnemyType.ORC -> Color(0xFF8B4513) // Коричневый для Орка
+                    EnemyType.TROLL -> Color.Gray
+                },
+                shape = RoundedCornerShape(50)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = when (monster.type) {
+                EnemyType.GHOST -> "G"
+                EnemyType.ORC -> "O"
+                EnemyType.TROLL -> "T"
+            },
+            fontFamily = FontFamily.Monospace,
+            fontSize = 24.sp,
+            color = Color.Black
+        )
+    }
 }
 
 @Composable
-fun PlayerImage(player: Player){
-    val imageRes = R.drawable.rambo // картинка игрока в drawable, например player.png
-
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = "Игрок",
+fun PlayerImage(player: Player) {
+    Box(
         modifier = Modifier
             .size(100.dp)
             .padding(8.dp)
-    )
+            .background(
+                color = Color.Green,
+                shape = RoundedCornerShape(50)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "P",
+            fontFamily = FontFamily.Monospace,
+            fontSize = 24.sp,
+            color = Color.Black
+        )
+    }
 }
-
 
 @Composable
 fun StyledButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
-    enabled: Boolean = true,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
@@ -208,7 +224,7 @@ fun StyledButton(
         )
     ) {
         Text(
-            text,
+            text = text,
             fontFamily = FontFamily.Monospace,
             fontSize = 14.sp,
             textAlign = TextAlign.Center
